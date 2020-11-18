@@ -6,6 +6,8 @@
 #include <QDoubleSpinBox>
 #include <QStackedWidget>
 #include "balance-slider.hpp"
+#include "obs-app.hpp"
+#include "window-basic-main.hpp"
 
 class QGridLayout;
 class QLabel;
@@ -16,6 +18,66 @@ class QComboBox;
 enum class VolumeType {
 	dB,
 	Percent,
+};
+
+/* ------------------------------------------------------------------------- */
+/* Qt event queue source callbacks */
+static inline void setCheckboxState(QCheckBox *checkbox, bool checked)
+{
+	checkbox->blockSignals(true);
+	checkbox->setChecked(checked);
+	checkbox->blockSignals(false);
+}
+
+class OBSmixert : public QCheckBox {
+	Q_OBJECT
+public:
+	//	operator QCheckBox*() const { return NULL;  }
+	OBSmixert(){};
+	OBSmixert(int n_, OBSSource source_) : source(source_), n(n_)
+	{
+		uint32_t mixers = obs_source_get_audio_mixers(source);
+		OBSBasic *main =
+			reinterpret_cast<OBSBasic *>(App()->GetMainWindow());
+
+		QString TrackName = QString("Track%1Name").arg(n + 1);
+		const char *name1 = config_get_string(main->Config(), "AdvOut",
+						      TrackName.toLocal8Bit());
+		this->setText(name1);
+
+		this->setChecked(mixers & (1 << n));
+
+		QWidget::connect(this, SIGNAL(clicked(bool)), this,
+				 SLOT(mixerChanged(bool)));
+	};
+	void setState(uint32_t mixers)
+	{
+		//uint32_t mixers = obs_source_get_audio_mixers(source);
+		setCheckboxState(this, mixers & (1 << this->n));
+	}
+
+private:
+	int n;
+	OBSSource source;
+
+	static inline void setMixer(obs_source_t *source, const int mixerIdx,
+				    const bool checked)
+	{
+		uint32_t mixers = obs_source_get_audio_mixers(source);
+		uint32_t new_mixers = mixers;
+
+		if (checked)
+			new_mixers |= (1 << mixerIdx);
+		else
+			new_mixers &= ~(1 << mixerIdx);
+
+		obs_source_set_audio_mixers(source, new_mixers);
+	}
+public slots:
+	void mixerChanged(bool checked)
+	{
+		this->setMixer(source, this->n, checked);
+	}
 };
 
 class OBSAdvAudioCtrl : public QObject {
@@ -41,12 +103,8 @@ private:
 	QPointer<QLabel> labelR;
 	QPointer<QSpinBox> syncOffset;
 	QPointer<QComboBox> monitoringType;
-	QPointer<QCheckBox> mixer1;
-	QPointer<QCheckBox> mixer2;
-	QPointer<QCheckBox> mixer3;
-	QPointer<QCheckBox> mixer4;
-	QPointer<QCheckBox> mixer5;
-	QPointer<QCheckBox> mixer6;
+
+	QVector<OBSmixert *> vmixers;
 
 	OBSSignal volChangedSignal;
 	OBSSignal syncOffsetSignal;
@@ -85,11 +143,6 @@ public slots:
 	void balanceChanged(int val);
 	void syncOffsetChanged(int milliseconds);
 	void monitoringTypeChanged(int index);
-	void mixer1Changed(bool checked);
-	void mixer2Changed(bool checked);
-	void mixer3Changed(bool checked);
-	void mixer4Changed(bool checked);
-	void mixer5Changed(bool checked);
-	void mixer6Changed(bool checked);
+	//	void mixerChanged(int i, bool checked);
 	void ResetBalance();
 };

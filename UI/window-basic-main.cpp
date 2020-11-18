@@ -1278,13 +1278,23 @@ bool OBSBasic::InitBasicConfigDefaults()
 	config_set_default_uint(basicConfig, "AdvOut", "FFABitrate", 160);
 	config_set_default_uint(basicConfig, "AdvOut", "FFAudioMixes", 1);
 
+//TODO: vectorize done
+	for (int c = 0; c < MAX_AUDIO_MIXES; c++) {
+		QString text = QString("Track%1Bitrate").arg(c+1);
+		config_set_default_uint(basicConfig, "AdvOut", text.toLocal8Bit(), 160);
+	}
+/*
 	config_set_default_uint(basicConfig, "AdvOut", "Track1Bitrate", 160);
 	config_set_default_uint(basicConfig, "AdvOut", "Track2Bitrate", 160);
 	config_set_default_uint(basicConfig, "AdvOut", "Track3Bitrate", 160);
 	config_set_default_uint(basicConfig, "AdvOut", "Track4Bitrate", 160);
 	config_set_default_uint(basicConfig, "AdvOut", "Track5Bitrate", 160);
 	config_set_default_uint(basicConfig, "AdvOut", "Track6Bitrate", 160);
-
+	config_set_default_uint(basicConfig, "AdvOut", "Track7Bitrate", 160);
+	config_set_default_uint(basicConfig, "AdvOut", "Track8Bitrate", 160);
+	config_set_default_uint(basicConfig, "AdvOut", "Track9Bitrate", 160);
+	config_set_default_uint(basicConfig, "AdvOut", "Track10Bitrate", 160);
+*/
 	config_set_default_bool(basicConfig, "AdvOut", "RecRB", false);
 	config_set_default_uint(basicConfig, "AdvOut", "RecRBTime", 20);
 	config_set_default_int(basicConfig, "AdvOut", "RecRBSize", 512);
@@ -4090,6 +4100,7 @@ void OBSBasic::on_action_Settings_triggered()
 	settings_already_executing = true;
 
 	{
+		/** @todo Replace the in time instantiation by showing the hidden settings windows precreated at lunch */
 		OBSBasicSettings settings(this);
 		settings.exec();
 	}
