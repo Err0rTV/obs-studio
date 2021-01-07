@@ -23,12 +23,15 @@
 #include <QPointer>
 #include <memory>
 #include <string>
+#include "audio-encoders.hpp"
+#include "qt-wrappers.hpp"
 
 #include <libff/ff-util.h>
 
 #include <obs.hpp>
 
 #include "auth-base.hpp"
+#include "advOutTrack.hpp"
 
 class OBSBasic;
 class QAbstractButton;
@@ -44,6 +47,79 @@ class OBSHotkeyWidget;
 #define VOLUME_METER_DECAY_FAST 23.53
 #define VOLUME_METER_DECAY_MEDIUM 11.76
 #define VOLUME_METER_DECAY_SLOW 8.57
+
+/* clang-format off */
+#define COMBO_CHANGED   SIGNAL(currentIndexChanged(int))
+#define EDIT_CHANGED    SIGNAL(textChanged(const QString &))
+#define CBEDIT_CHANGED  SIGNAL(editTextChanged(const QString &))
+#define CHECK_CHANGED   SIGNAL(clicked(bool))
+#define SCROLL_CHANGED  SIGNAL(valueChanged(int))
+#define DSCROLL_CHANGED SIGNAL(valueChanged(double))
+#define TOGGLE_CHANGED  SIGNAL(toggled(bool))
+
+#define GENERAL_CHANGED SLOT(GeneralChanged())
+#define STREAM1_CHANGED SLOT(Stream1Changed())
+#define OUTPUTS_CHANGED SLOT(OutputsChanged())
+#define AUDIO_RESTART   SLOT(AudioChangedRestart())
+#define AUDIO_CHANGED   SLOT(AudioChanged())
+#define VIDEO_RESTART   SLOT(VideoChangedRestart())
+#define VIDEO_RES       SLOT(VideoChangedResolution())
+#define VIDEO_CHANGED   SLOT(VideoChanged())
+#define ADV_CHANGED     SLOT(AdvancedChanged())
+#define ADV_RESTART     SLOT(AdvancedChangedRestart())
+/* clang-format on */
+
+//TODO: move to bitratecontrol
+static void RestrictResetBitrates(std::initializer_list<QComboBox *> boxes, int maxbitrate)
+{
+	for (auto box : boxes) {
+		int idx = box->currentIndex();
+		int max_bitrate = FindClosestAvailableAACBitrate(maxbitrate);
+		int count = box->count();
+		int max_idx = box->findText(
+			QT_UTF8(std::to_string(max_bitrate).c_str()));
+
+		for (int i = (count - 1); i > max_idx; i--)
+			box->removeItem(i);
+
+		if (idx > max_idx) {
+			int default_bitrate =
+				FindClosestAvailableAACBitrate(maxbitrate / 2);
+			int default_idx = box->findText(QT_UTF8(
+				std::to_string(default_bitrate).c_str()));
+
+			box->setCurrentIndex(default_idx);
+			box->setProperty("changed", QVariant(true));
+		} else {
+			box->setCurrentIndex(idx);
+		}
+	}
+}
+static void PopulateAACBitrates(std::initializer_list<QComboBox *> boxes)
+{
+	auto &bitrateMap = GetAACEncoderBitrateMap();
+	if (bitrateMap.empty())
+		return;
+
+	std::vector<std::pair<QString, QString>> pairs;
+	for (auto &entry : bitrateMap)
+		pairs.emplace_back(QString::number(entry.first),
+				   obs_encoder_get_display_name(entry.second));
+
+	for (auto box : boxes) {
+		QString currentText = box->currentText();
+		box->clear();
+
+		for (auto &pair : pairs) {
+			box->addItem(pair.first);
+			box->setItemData(box->count() - 1, pair.second,
+					 Qt::ToolTipRole);
+		}
+
+		box->setCurrentText(currentText);
+	}
+}
+
 
 class SilentUpdateCheckBox : public QCheckBox {
 	Q_OBJECT
@@ -127,6 +203,7 @@ private:
 	int lastChannelSetupIdx = 0;
 
 	OBSFFFormatDesc formats;
+	QVector<advOutTrack*> VadvOutTrack;
 
 	OBSPropertiesView *streamProperties = nullptr;
 	OBSPropertiesView *streamEncoderProps = nullptr;
@@ -155,6 +232,7 @@ private:
 	std::vector<std::pair<bool, QPointer<OBSHotkeyWidget>>> hotkeys;
 	OBSSignal hotkeyRegistered;
 	OBSSignal hotkeyUnregistered;
+	OBSSignal optionChanged;
 
 	uint32_t outputCX = 0;
 	uint32_t outputCY = 0;

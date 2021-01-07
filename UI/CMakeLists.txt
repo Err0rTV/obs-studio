@@ -194,6 +194,7 @@ set(obs_SOURCES
 	obs-app.cpp
 	window-dock.cpp
 	api-interface.cpp
+	advOutTrack.cpp
 	window-basic-main.cpp
 	window-basic-stats.cpp
 	window-basic-filters.cpp
@@ -263,6 +264,7 @@ set(obs_HEADERS
 	../deps/json11/json11.hpp
 	obs-app.hpp
 	platform.hpp
+	advOutTrack.hpp
 	window-dock.hpp
 	window-main.hpp
 	window-basic-main.hpp
@@ -348,6 +350,8 @@ set(obs_UI
 	forms/source-toolbar/color-source-toolbar.ui
 	forms/source-toolbar/text-source-toolbar.ui
 	forms/source-toolbar/media-controls.ui
+	forms/advOutTrack.ui
+	forms/NameDialog.ui
 	forms/AutoConfigStartPage.ui
 	forms/AutoConfigVideoPage.ui
 	forms/AutoConfigStreamPage.ui
