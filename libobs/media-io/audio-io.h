@@ -25,7 +25,7 @@
 extern "C" {
 #endif
 
-#define MAX_AUDIO_MIXES 6
+#define MAX_AUDIO_MIXES 10
 #define MAX_AUDIO_CHANNELS 8
 #define AUDIO_OUTPUT_FRAMES 1024
 

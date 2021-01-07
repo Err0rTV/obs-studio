@@ -45,12 +45,6 @@ OBSAdvAudioCtrl::OBSAdvAudioCtrl(QGridLayout *, obs_source_t *source_)
 	monitoringType = new QComboBox();
 #endif
 	syncOffset = new QSpinBox();
-	mixer1 = new QCheckBox();
-	mixer2 = new QCheckBox();
-	mixer3 = new QCheckBox();
-	mixer4 = new QCheckBox();
-	mixer5 = new QCheckBox();
-	mixer6 = new QCheckBox();
 
 	activateSignal.Connect(handler, "activate", OBSSourceActivated, this);
 	deactivateSignal.Connect(handler, "deactivate", OBSSourceDeactivated,
@@ -184,31 +178,6 @@ OBSAdvAudioCtrl::OBSAdvAudioCtrl(QGridLayout *, obs_source_t *source_)
 		QTStr("Basic.AdvAudio.MonitoringSource").arg(sourceName));
 #endif
 
-	mixer1->setText("1");
-	mixer1->setChecked(mixers & (1 << 0));
-	mixer1->setAccessibleName(
-		QTStr("Basic.Settings.Output.Adv.Audio.Track1"));
-	mixer2->setText("2");
-	mixer2->setChecked(mixers & (1 << 1));
-	mixer2->setAccessibleName(
-		QTStr("Basic.Settings.Output.Adv.Audio.Track2"));
-	mixer3->setText("3");
-	mixer3->setChecked(mixers & (1 << 2));
-	mixer3->setAccessibleName(
-		QTStr("Basic.Settings.Output.Adv.Audio.Track3"));
-	mixer4->setText("4");
-	mixer4->setChecked(mixers & (1 << 3));
-	mixer4->setAccessibleName(
-		QTStr("Basic.Settings.Output.Adv.Audio.Track4"));
-	mixer5->setText("5");
-	mixer5->setChecked(mixers & (1 << 4));
-	mixer5->setAccessibleName(
-		QTStr("Basic.Settings.Output.Adv.Audio.Track5"));
-	mixer6->setText("6");
-	mixer6->setChecked(mixers & (1 << 5));
-	mixer6->setAccessibleName(
-		QTStr("Basic.Settings.Output.Adv.Audio.Track6"));
-
 	speaker_layout sl = obs_source_get_speaker_layout(source);
 
 	if (sl == SPEAKERS_STEREO) {
@@ -218,12 +187,11 @@ OBSAdvAudioCtrl::OBSAdvAudioCtrl(QGridLayout *, obs_source_t *source_)
 		balanceContainer->setMaximumWidth(170);
 	}
 
-	mixerContainer->layout()->addWidget(mixer1);
-	mixerContainer->layout()->addWidget(mixer2);
-	mixerContainer->layout()->addWidget(mixer3);
-	mixerContainer->layout()->addWidget(mixer4);
-	mixerContainer->layout()->addWidget(mixer5);
-	mixerContainer->layout()->addWidget(mixer6);
+	for (int i = 0; i < MAX_AUDIO_MIXES; i++) {
+		OBSmixert *mixer = new OBSmixert(i, source);
+		mixerContainer->layout()->addWidget(mixer);
+		this->vmixers.append(mixer);
+	}
 
 	QWidget::connect(volume, SIGNAL(valueChanged(double)), this,
 			 SLOT(volumeChanged(double)));
@@ -241,18 +209,6 @@ OBSAdvAudioCtrl::OBSAdvAudioCtrl(QGridLayout *, obs_source_t *source_)
 	QWidget::connect(monitoringType, SIGNAL(currentIndexChanged(int)), this,
 			 SLOT(monitoringTypeChanged(int)));
 #endif
-	QWidget::connect(mixer1, SIGNAL(clicked(bool)), this,
-			 SLOT(mixer1Changed(bool)));
-	QWidget::connect(mixer2, SIGNAL(clicked(bool)), this,
-			 SLOT(mixer2Changed(bool)));
-	QWidget::connect(mixer3, SIGNAL(clicked(bool)), this,
-			 SLOT(mixer3Changed(bool)));
-	QWidget::connect(mixer4, SIGNAL(clicked(bool)), this,
-			 SLOT(mixer4Changed(bool)));
-	QWidget::connect(mixer5, SIGNAL(clicked(bool)), this,
-			 SLOT(mixer5Changed(bool)));
-	QWidget::connect(mixer6, SIGNAL(clicked(bool)), this,
-			 SLOT(mixer6Changed(bool)));
 
 	setObjectName(sourceName);
 }
@@ -338,15 +294,6 @@ void OBSAdvAudioCtrl::OBSSourceMixersChanged(void *param, calldata_t *calldata)
 				  Q_ARG(uint32_t, mixers));
 }
 
-/* ------------------------------------------------------------------------- */
-/* Qt event queue source callbacks */
-
-static inline void setCheckboxState(QCheckBox *checkbox, bool checked)
-{
-	checkbox->blockSignals(true);
-	checkbox->setChecked(checked);
-	checkbox->blockSignals(false);
-}
 
 void OBSAdvAudioCtrl::SourceActiveChanged(bool isActive)
 {
@@ -382,12 +329,8 @@ void OBSAdvAudioCtrl::SourceSyncChanged(int64_t offset)
 
 void OBSAdvAudioCtrl::SourceMixersChanged(uint32_t mixers)
 {
-	setCheckboxState(mixer1, mixers & (1 << 0));
-	setCheckboxState(mixer2, mixers & (1 << 1));
-	setCheckboxState(mixer3, mixers & (1 << 2));
-	setCheckboxState(mixer4, mixers & (1 << 3));
-	setCheckboxState(mixer5, mixers & (1 << 4));
-	setCheckboxState(mixer6, mixers & (1 << 5));
+	OBSmixert * mix;
+	foreach(mix, this->vmixers) mix->setState(mixers);
 }
 
 /* ------------------------------------------------------------------------- */
@@ -475,49 +418,7 @@ void OBSAdvAudioCtrl::monitoringTypeChanged(int index)
 	     obs_source_get_name(source), type);
 }
 
-static inline void setMixer(obs_source_t *source, const int mixerIdx,
-			    const bool checked)
-{
-	uint32_t mixers = obs_source_get_audio_mixers(source);
-	uint32_t new_mixers = mixers;
 
-	if (checked)
-		new_mixers |= (1 << mixerIdx);
-	else
-		new_mixers &= ~(1 << mixerIdx);
-
-	obs_source_set_audio_mixers(source, new_mixers);
-}
-
-void OBSAdvAudioCtrl::mixer1Changed(bool checked)
-{
-	setMixer(source, 0, checked);
-}
-
-void OBSAdvAudioCtrl::mixer2Changed(bool checked)
-{
-	setMixer(source, 1, checked);
-}
-
-void OBSAdvAudioCtrl::mixer3Changed(bool checked)
-{
-	setMixer(source, 2, checked);
-}
-
-void OBSAdvAudioCtrl::mixer4Changed(bool checked)
-{
-	setMixer(source, 3, checked);
-}
-
-void OBSAdvAudioCtrl::mixer5Changed(bool checked)
-{
-	setMixer(source, 4, checked);
-}
-
-void OBSAdvAudioCtrl::mixer6Changed(bool checked)
-{
-	setMixer(source, 5, checked);
-}
 
 void OBSAdvAudioCtrl::SetVolumeWidget(VolumeType type)
 {
