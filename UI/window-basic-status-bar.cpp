@@ -7,6 +7,8 @@
 #include "window-basic-status-bar.hpp"
 #include "window-basic-main-outputs.hpp"
 
+#include "nvml.h"
+
 OBSBasicStatusBar::OBSBasicStatusBar(QWidget *parent)
 	: QStatusBar(parent),
 	  delayInfo(new QLabel),
@@ -233,7 +235,22 @@ void OBSBasicStatusBar::UpdateCPUUsage()
 
 	QString text;
 	text += QString("CPU: ") +
-		QString::number(main->GetCPUUsage(), 'f', 1) + QString("%, ") +
+		QString::number(main->GetCPUUsage(), 'f', 1) + QString("%, ");
+
+	/**
+	* NVidia ML
+	*/
+	if (main->device != NULL) {
+		nvmlUtilization_t utilization;
+		auto result = nvmlDeviceGetUtilizationRates(main->device,
+						       &utilization);
+		if (NVML_SUCCESS == result) {
+			text += QString("GPU: ") +
+				QString::number((utilization.gpu), 'f', 1);
+		}
+	}
+
+	text += QString("%, ") +
 		QString::number(obs_get_active_fps(), 'f', 2) + QString(" fps");
 
 	cpuUsage->setText(text);

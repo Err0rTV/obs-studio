@@ -44,6 +44,8 @@
 
 #include <QPointer>
 
+#include "nvml.h"
+
 class QMessageBox;
 class QListWidgetItem;
 class VolControl;
@@ -841,6 +843,8 @@ public:
 	QIcon GetSceneIcon() const;
 
 	OBSWeakSource copyFilter = nullptr;
+
+	nvmlDevice_t device;
 
 protected:
 	virtual void closeEvent(QCloseEvent *event) override;

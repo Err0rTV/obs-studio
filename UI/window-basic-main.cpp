@@ -297,6 +297,15 @@ OBSBasic::OBSBasic(QWidget *parent)
 		SLOT(UpdateCPUUsage()));
 	cpuUsageTimer->start(3000);
 
+	/**
+	* NVidia ML
+	*/
+	auto result = nvmlInit();
+	if (NVML_SUCCESS == result) {
+		result = nvmlDeviceGetHandleByIndex(0, &device);
+	}
+
+
 	diskFullTimer = new QTimer(this);
 	connect(diskFullTimer, SIGNAL(timeout()), this,
 		SLOT(CheckDiskSpaceRemaining()));
