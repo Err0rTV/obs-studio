@@ -166,7 +166,7 @@
               <number>9</number>
              </property>
              <item alignment="Qt::AlignTop">
-              <widget class="QWidget" name="widget_2" native="true">
+              <widget class="QWidget" name="widget_2">
                <layout class="QVBoxLayout" name="verticalLayout_20">
                 <item>
                  <widget class="QGroupBox" name="groupBox_15">
@@ -796,7 +796,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QWidget" name="widget_5" native="true">
+          <widget class="QWidget" name="widget_5">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
              <horstretch>0</horstretch>
@@ -821,7 +821,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QWidget" name="serviceWidget" native="true">
+             <widget class="QWidget" name="serviceWidget">
               <layout class="QHBoxLayout" name="serviceWidgetLayout" stretch="0,0">
                <property name="leftMargin">
                 <number>0</number>
@@ -1046,7 +1046,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QWidget" name="streamKeyWidget" native="true">
+              <widget class="QWidget" name="streamKeyWidget">
                <layout class="QHBoxLayout" name="horizontalLayout_11">
                 <property name="leftMargin">
                  <number>0</number>
@@ -1195,7 +1195,7 @@
               </widget>
              </item>
              <item row="9" column="1">
-              <widget class="QWidget" name="authPwWidget" native="true">
+              <widget class="QWidget" name="authPwWidget">
                <layout class="QHBoxLayout" name="horizontalLayout_25">
                 <property name="leftMargin">
                  <number>0</number>
@@ -1307,7 +1307,7 @@
               <number>9</number>
              </property>
              <item alignment="Qt::AlignTop">
-              <widget class="QWidget" name="widget" native="true">
+              <widget class="QWidget" name="widget">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1821,7 +1821,7 @@
                   </spacer>
                  </item>
                  <item alignment="Qt::AlignTop">
-                  <widget class="QWidget" name="simpleOutputContainer" native="true">
+                  <widget class="QWidget" name="simpleOutputContainer">
                    <layout class="QVBoxLayout" name="verticalLayout_4">
                     <property name="leftMargin">
                      <number>0</number>
@@ -1877,7 +1877,7 @@
                       <number>9</number>
                      </property>
                      <item alignment="Qt::AlignTop">
-                      <widget class="QWidget" name="widget_4" native="true">
+                      <widget class="QWidget" name="widget_4">
                        <layout class="QVBoxLayout" name="verticalLayout_14">
                         <property name="spacing">
                          <number>0</number>
@@ -1895,7 +1895,7 @@
                          <number>0</number>
                         </property>
                         <item>
-                         <widget class="QWidget" name="advOutTopContainer" native="true">
+                         <widget class="QWidget" name="advOutTopContainer">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
                             <horstretch>0</horstretch>
@@ -1926,7 +1926,7 @@
                             </widget>
                            </item>
                            <item row="1" column="1">
-                            <widget class="QWidget" name="widget_8" native="true">
+                            <widget class="QWidget" name="widget_8">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                                <horstretch>0</horstretch>
@@ -2075,7 +2075,7 @@
                       <number>9</number>
                      </property>
                      <item>
-                      <widget class="QWidget" name="advOutRecTypeContainer" native="true">
+                      <widget class="QWidget" name="advOutRecTypeContainer">
                        <layout class="QFormLayout" name="formLayout_9">
                         <property name="fieldGrowthPolicy">
                          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
@@ -2142,7 +2142,7 @@
                           <number>0</number>
                          </property>
                          <item>
-                          <widget class="QWidget" name="advOutRecTopContainer" native="true">
+                          <widget class="QWidget" name="advOutRecTopContainer">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
                              <horstretch>0</horstretch>
@@ -2296,7 +2296,7 @@
                              </widget>
                             </item>
                             <item row="5" column="1">
-                             <widget class="QWidget" name="advOutRecRescaleContainer" native="true">
+                             <widget class="QWidget" name="advOutRecRescaleContainer">
                               <layout class="QHBoxLayout" name="horizontalLayout_4">
                                <property name="leftMargin">
                                 <number>0</number>
@@ -2511,7 +2511,7 @@
                           </widget>
                          </item>
                          <item alignment="Qt::AlignTop">
-                          <widget class="QWidget" name="widget_7" native="true">
+                          <widget class="QWidget" name="widget_7">
                            <layout class="QVBoxLayout" name="verticalLayout_15">
                             <property name="leftMargin">
                              <number>0</number>
@@ -2865,7 +2865,7 @@
                           </widget>
                          </item>
                          <item row="13" column="1">
-                          <widget class="QWidget" name="widget_10" native="true">
+                          <widget class="QWidget" name="widget_10">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                              <horstretch>0</horstretch>
@@ -3019,7 +3019,7 @@
                       <number>0</number>
                      </property>
                      <item alignment="Qt::AlignTop">
-                      <widget class="QWidget" name="advOutTrackContainer" native="true">
+                      <widget class="QWidget" name="advOutTrackContainer">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                          <horstretch>0</horstretch>
@@ -3192,7 +3192,7 @@
               <number>9</number>
              </property>
              <item alignment="Qt::AlignTop">
-              <widget class="QWidget" name="widget_50" native="true">
+              <widget class="QWidget" name="widget_50">
                <layout class="QVBoxLayout" name="verticalLayout_51">
                 <item>
                  <widget class="QGroupBox" name="audioGeneralGroupBox">
@@ -4048,7 +4048,7 @@
               <number>9</number>
              </property>
              <item>
-              <widget class="QWidget" name="widget_11" native="true">
+              <widget class="QWidget" name="widget_11">
                <layout class="QVBoxLayout" name="verticalLayout_24">
                 <item>
                  <widget class="QGroupBox" name="advancedGeneralGroupBox">
@@ -4441,7 +4441,7 @@
                     </widget>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QWidget" name="widget_12" native="true">
+                    <widget class="QWidget" name="widget_12">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>

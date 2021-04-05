@@ -68,6 +68,7 @@ typedef struct obs_weak_output obs_weak_output_t;
 typedef struct obs_weak_encoder obs_weak_encoder_t;
 typedef struct obs_weak_service obs_weak_service_t;
 
+#include "obs-missing-files.h"
 #include "obs-source.h"
 #include "obs-encoder.h"
 #include "obs-output.h"
@@ -428,6 +429,9 @@ EXPORT bool obs_init_module(obs_module_t *module);
 
 /** Returns a module based upon its name, or NULL if not found */
 EXPORT obs_module_t *obs_get_module(const char *name);
+
+/** Gets library of module */
+EXPORT void *obs_get_module_lib(obs_module_t *module);
 
 /** Returns locale text from a specific module */
 EXPORT bool obs_module_get_locale_string(const obs_module_t *mod,
@@ -894,6 +898,14 @@ EXPORT void obs_source_remove(obs_source_t *source);
 /** Returns true if the source should be released */
 EXPORT bool obs_source_removed(const obs_source_t *source);
 
+/** The 'hidden' flag is not the same as a sceneitem's visibility. It is a
+  * property the determines if it can be found through searches. **/
+/** Simply sets a 'hidden' flag when the source is still alive but shouldn't be found */
+EXPORT void obs_source_set_hidden(obs_source_t *source, bool hidden);
+
+/** Returns the current 'hidden' state on the source */
+EXPORT bool obs_source_is_hidden(obs_source_t *source);
+
 /** Returns capability flags of a source */
 EXPORT uint32_t obs_source_get_output_flags(const obs_source_t *source);
 
@@ -905,6 +917,13 @@ EXPORT obs_data_t *obs_get_source_defaults(const char *id);
 
 /** Returns the property list, if any.  Free with obs_properties_destroy */
 EXPORT obs_properties_t *obs_get_source_properties(const char *id);
+
+EXPORT obs_missing_files_t *
+obs_source_get_missing_files(const obs_source_t *source);
+
+EXPORT void obs_source_replace_missing_file(obs_missing_file_cb cb,
+					    obs_source_t *source,
+					    const char *new_path, void *data);
 
 /** Returns whether the source has custom properties or not */
 EXPORT bool obs_is_source_configurable(const char *id);
@@ -1089,6 +1108,9 @@ EXPORT void obs_source_enum_filters(obs_source_t *source,
 /** Gets a filter of a source by its display name. */
 EXPORT obs_source_t *obs_source_get_filter_by_name(obs_source_t *source,
 						   const char *name);
+
+/** Gets the number of filters the source has. */
+EXPORT size_t obs_source_filter_count(const obs_source_t *source);
 
 EXPORT void obs_source_copy_filters(obs_source_t *dst, obs_source_t *src);
 EXPORT void obs_source_copy_single_filter(obs_source_t *dst,
@@ -1567,6 +1589,29 @@ EXPORT void obs_sceneitem_release(obs_sceneitem_t *item);
 /** Removes a scene item. */
 EXPORT void obs_sceneitem_remove(obs_sceneitem_t *item);
 
+/** Adds a scene item. */
+EXPORT void obs_sceneitems_add(obs_scene_t *scene, obs_data_array_t *data);
+
+/** Saves Sceneitem into an array, arr **/
+EXPORT void obs_sceneitem_save(obs_sceneitem_t *item, obs_data_array_t *arr);
+
+/** Set the ID of a sceneitem */
+EXPORT void obs_sceneitem_set_id(obs_sceneitem_t *sceneitem, int64_t id);
+
+/** Tries to find the sceneitem of the source in a given scene. Returns NULL if not found */
+EXPORT obs_sceneitem_t *obs_scene_sceneitem_from_source(obs_scene_t *scene,
+							obs_source_t *source);
+
+/** Save all the transform states for a current scene's sceneitems */
+EXPORT obs_data_t *obs_scene_save_transform_states(obs_scene_t *scene,
+						   bool all_items);
+
+/** Load all the transform states of sceneitems in that scene */
+EXPORT void obs_scene_load_transform_states(const char *state);
+
+/**  Gets a sceneitem's order in its scene */
+EXPORT int obs_sceneitem_get_order_position(obs_sceneitem_t *item);
+
 /** Gets the scene parent associated with the scene item. */
 EXPORT obs_scene_t *obs_sceneitem_get_scene(const obs_sceneitem_t *item);
 
@@ -1701,6 +1746,22 @@ EXPORT obs_scene_t *obs_group_from_source(const obs_source_t *source);
 
 EXPORT void obs_sceneitem_defer_group_resize_begin(obs_sceneitem_t *item);
 EXPORT void obs_sceneitem_defer_group_resize_end(obs_sceneitem_t *item);
+
+EXPORT void obs_sceneitem_set_show_transition(obs_sceneitem_t *item,
+					      obs_source_t *transition);
+EXPORT void obs_sceneitem_set_show_transition_duration(obs_sceneitem_t *item,
+						       uint32_t duration_ms);
+EXPORT obs_source_t *obs_sceneitem_get_show_transition(obs_sceneitem_t *item);
+EXPORT uint32_t
+obs_sceneitem_get_show_transition_duration(obs_sceneitem_t *item);
+EXPORT void obs_sceneitem_set_hide_transition(obs_sceneitem_t *item,
+					      obs_source_t *transition);
+EXPORT void obs_sceneitem_set_hide_transition_duration(obs_sceneitem_t *item,
+						       uint32_t duration_ms);
+EXPORT obs_source_t *obs_sceneitem_get_hide_transition(obs_sceneitem_t *item);
+EXPORT uint32_t
+obs_sceneitem_get_hide_transition_duration(obs_sceneitem_t *item);
+EXPORT void obs_sceneitem_do_transition(obs_sceneitem_t *item, bool visible);
 
 /* ------------------------------------------------------------------------- */
 /* Outputs */

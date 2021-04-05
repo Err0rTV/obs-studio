@@ -157,13 +157,20 @@ AutoConfigVideoPage::AutoConfigVideoPage(QWidget *parent)
 	for (int i = 0; i < screens.size(); i++) {
 		QScreen *screen = screens[i];
 		QSize as = screen->size();
+		int as_width = as.width();
+		int as_height = as.height();
 
-		encRes = int(as.width() << 16) | int(as.height());
+		// Calculate physical screen resolution based on the virtual screen resolution
+		// They might differ if scaling is enabled, e.g. for HiDPI screens
+		as_width = round(as_width * screen->devicePixelRatio());
+		as_height = round(as_height * screen->devicePixelRatio());
+
+		encRes = as_width << 16 | as_height;
 
 		QString str = QTStr(RES_USE_DISPLAY)
 				      .arg(QString::number(i + 1),
-					   QString::number(as.width()),
-					   QString::number(as.height()));
+					   QString::number(as_width),
+					   QString::number(as_height));
 
 		ui->canvasRes->addItem(str, encRes);
 	}
@@ -629,6 +636,11 @@ void AutoConfigStreamPage::UpdateKeyLink()
 		streamKeyLink = "https://www.app.youstreamer.com/stream/";
 	} else if (serviceName == "Trovo") {
 		streamKeyLink = "https://studio.trovo.live/mychannel/stream";
+	} else if (serviceName == "Glimesh") {
+		streamKeyLink = "https://glimesh.tv/users/settings/stream";
+	} else if (serviceName.startsWith("OPENREC.tv")) {
+		streamKeyLink =
+			"https://www.openrec.tv/login?keep_login=true&url=https://www.openrec.tv/dashboard/live?from=obs";
 	}
 
 	if (QString(streamKeyLink).isNull()) {
