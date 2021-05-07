@@ -942,6 +942,8 @@ EXPORT obs_properties_t *obs_source_properties(const obs_source_t *source);
 
 /** Updates settings for this source */
 EXPORT void obs_source_update(obs_source_t *source, obs_data_t *settings);
+EXPORT void obs_source_reset_settings(obs_source_t *source,
+				      obs_data_t *settings);
 
 /** Renders a video source. */
 EXPORT void obs_source_video_render(obs_source_t *source);
@@ -1203,6 +1205,10 @@ obs_source_get_monitoring_type(const obs_source_t *source);
 /** Gets private front-end settings data.  This data is saved/loaded
  * automatically.  Returns an incremented reference. */
 EXPORT obs_data_t *obs_source_get_private_settings(obs_source_t *item);
+
+EXPORT obs_data_array_t *obs_source_backup_filters(obs_source_t *source);
+EXPORT void obs_source_restore_filters(obs_source_t *source,
+				       obs_data_array_t *array);
 
 /* ------------------------------------------------------------------------- */
 /* Functions used by sources */
@@ -1570,6 +1576,18 @@ EXPORT obs_sceneitem_t *obs_scene_find_source_recursive(obs_scene_t *scene,
 
 EXPORT obs_sceneitem_t *obs_scene_find_sceneitem_by_id(obs_scene_t *scene,
 						       int64_t id);
+
+/** Gets scene by name, increments the reference */
+static inline obs_scene_t *obs_get_scene_by_name(const char *name)
+{
+	obs_source_t *source = obs_get_source_by_name(name);
+	obs_scene_t *scene = obs_scene_from_source(source);
+	if (!scene) {
+		obs_source_release(source);
+		return NULL;
+	}
+	return scene;
+}
 
 /** Enumerates sources within a scene */
 EXPORT void obs_scene_enum_items(obs_scene_t *scene,

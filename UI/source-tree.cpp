@@ -130,9 +130,35 @@ SourceTreeItem::SourceTreeItem(SourceTree *tree_, OBSSceneItem sceneitem_)
 
 	/* --------------------------------------------------------- */
 
-	auto setItemVisible = [this](bool checked) {
+	auto setItemVisible = [this](bool val) {
+		obs_scene_t *scene = obs_sceneitem_get_scene(sceneitem);
+		obs_source_t *scenesource = obs_scene_get_source(scene);
+		int64_t id = obs_sceneitem_get_id(sceneitem);
+		const char *name = obs_source_get_name(scenesource);
+		obs_source_t *source = obs_sceneitem_get_source(sceneitem);
+
+		auto undo_redo = [](const std::string &name, int64_t id,
+				    bool val) {
+			obs_scene_t *s = obs_get_scene_by_name(name.c_str());
+			obs_sceneitem_t *si =
+				obs_scene_find_sceneitem_by_id(s, id);
+			if (si)
+				obs_sceneitem_set_visible(si, val);
+			obs_scene_release(s);
+		};
+
+		QString str = QTStr(val ? "Undo.ShowSceneItem"
+					: "Undo.HideSceneItem");
+
+		OBSBasic *main = OBSBasic::Get();
+		main->undo_s.add_action(
+			str.arg(obs_source_get_name(source), name),
+			std::bind(undo_redo, std::placeholders::_1, id, !val),
+			std::bind(undo_redo, std::placeholders::_1, id, val),
+			name, name);
+
 		SignalBlocker sourcesSignalBlocker(this);
-		obs_sceneitem_set_visible(sceneitem, checked);
+		obs_sceneitem_set_visible(sceneitem, val);
 	};
 
 	auto setItemLocked = [this](bool checked) {
@@ -429,7 +455,7 @@ void SourceTreeItem::ExitEditMode(bool save)
 	};
 
 	main->undo_s.add_action(QTStr("Undo.Rename").arg(newName.c_str()), undo,
-				redo, newName, prevName, NULL);
+				redo, newName, prevName);
 
 	obs_source_set_name(source, newName.c_str());
 	label->setText(QT_UTF8(newName.c_str()));
@@ -1118,7 +1144,10 @@ void SourceTree::dropEvent(QDropEvent *event)
 		return;
 	}
 
+	OBSBasic *main = OBSBasic::Get();
+
 	OBSScene scene = GetCurrentScene();
+	obs_source_t *scenesource = obs_scene_get_source(scene);
 	SourceTreeModel *stm = GetStm();
 	auto &items = stm->items;
 	QModelIndexList indices = selectedIndexes();
@@ -1215,6 +1244,11 @@ void SourceTree::dropEvent(QDropEvent *event)
 		QListView::dropEvent(event);
 		return;
 	}
+
+	/* --------------------------------------- */
+	/* save undo data                          */
+
+	OBSData undo_data = main->BackupScene(scenesource);
 
 	/* --------------------------------------- */
 	/* if selection includes base group items, */
@@ -1378,6 +1412,18 @@ void SourceTree::dropEvent(QDropEvent *event)
 	ignoreReorder = true;
 	obs_scene_atomic_update(scene, preUpdateScene, &updateScene);
 	ignoreReorder = false;
+
+	/* --------------------------------------- */
+	/* save redo data                          */
+
+	OBSData redo_data = main->BackupScene(scenesource);
+
+	/* --------------------------------------- */
+	/* add undo/redo action                    */
+
+	const char *scene_name = obs_source_get_name(scenesource);
+	QString action_name = QTStr("Undo.ReorderSources").arg(scene_name);
+	main->CreateSceneUndoRedoAction(action_name, undo_data, redo_data);
 
 	/* --------------------------------------- */
 	/* remove items if dropped in to collapsed */

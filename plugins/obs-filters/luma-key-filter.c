@@ -130,9 +130,13 @@ static void luma_key_render_internal(void *data, bool srgb)
 	gs_effect_set_float(filter->luma_min_smooth_param,
 			    filter->luma_min_smooth);
 
-	const bool previous = gs_set_linear_srgb(srgb);
-	obs_source_process_filter_end(filter->context, filter->effect, 0, 0);
-	gs_set_linear_srgb(previous);
+	if (srgb) {
+		obs_source_process_filter_end_srgb(filter->context,
+						   filter->effect, 0, 0);
+	} else {
+		obs_source_process_filter_end(filter->context, filter->effect,
+					      0, 0);
+	}
 }
 
 static void luma_key_render_v1(void *data, gs_effect_t *effect)
@@ -154,13 +158,13 @@ static obs_properties_t *luma_key_properties(void *data)
 	obs_properties_t *props = obs_properties_create();
 
 	obs_properties_add_float_slider(props, SETTING_LUMA_MAX, TEXT_LUMA_MAX,
-					0, 1, 0.01);
+					0, 1, 0.0001);
 	obs_properties_add_float_slider(props, SETTING_LUMA_MAX_SMOOTH,
-					TEXT_LUMA_MAX_SMOOTH, 0, 1, 0.01);
+					TEXT_LUMA_MAX_SMOOTH, 0, 1, 0.0001);
 	obs_properties_add_float_slider(props, SETTING_LUMA_MIN, TEXT_LUMA_MIN,
-					0, 1, 0.01);
+					0, 1, 0.0001);
 	obs_properties_add_float_slider(props, SETTING_LUMA_MIN_SMOOTH,
-					TEXT_LUMA_MIN_SMOOTH, 0, 1, 0.01);
+					TEXT_LUMA_MIN_SMOOTH, 0, 1, 0.0001);
 
 	UNUSED_PARAMETER(data);
 	return props;

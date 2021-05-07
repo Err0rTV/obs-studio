@@ -219,6 +219,7 @@ private:
 	QPointer<OBSBasicFilters> filters;
 	QPointer<QDockWidget> statsDock;
 	QPointer<OBSAbout> about;
+	QPointer<OBSMissingFiles> missDialog;
 
 	OBSLogViewer *logView = nullptr;
 
@@ -378,7 +379,6 @@ private:
 	void ChangeSceneCollection();
 	void LogScenes();
 
-	void LoadProfile();
 	void ResetProfileData();
 	bool AddProfile(bool create_new, const char *title, const char *text,
 			const char *init_text = nullptr, bool rename = false);
@@ -488,8 +488,6 @@ private:
 	QList<QDialog *> modalDialogs;
 	QList<QMessageBox *> visMsgBoxes;
 
-	OBSMissingFiles *missDialog;
-
 	QList<QPoint> visDlgPositions;
 
 	QByteArray startingDockLayout;
@@ -554,6 +552,9 @@ private:
 	void ResetProjectors();
 
 	QPointer<QObject> screenshotData;
+
+	void MoveSceneItem(enum obs_order_movement movement,
+			   const QString &action_name);
 
 public slots:
 	void DeferSaveBegin();
@@ -862,6 +863,15 @@ public:
 	void ShowStatusBarMessage(const QString &message);
 	
 	nvmlDevice_t device;
+
+	static OBSData BackupScene(obs_source_t *scene_source);
+	void CreateSceneUndoRedoAction(const QString &action_name,
+				       OBSData undo_data, OBSData redo_data);
+
+	void CreateFilterPasteUndoRedoAction(const QString &text,
+					     obs_source_t *source,
+					     obs_data_array_t *undo_array,
+					     obs_data_array_t *redo_array);
 
 protected:
 	virtual void closeEvent(QCloseEvent *event) override;
