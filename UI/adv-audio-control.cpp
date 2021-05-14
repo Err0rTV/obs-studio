@@ -547,10 +547,10 @@ static inline void setMixer(obs_source_t *source, const int mixerIdx,
 		name);
 }
 
-void OBSAdvAudioCtrl::mixer1Changed(bool checked)
-{
-	setMixer(source, 0, checked);
-}
+// void OBSAdvAudioCtrl::mixer1Changed(bool checked)
+// {
+// 	setMixer(source, 0, checked);
+// }
 
 
 void OBSAdvAudioCtrl::SetVolumeWidget(VolumeType type)
