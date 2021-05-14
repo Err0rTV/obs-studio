@@ -410,7 +410,9 @@ target_link_libraries(obs
 	obs-frontend-api
 	${FFMPEG_LIBRARIES}
 	${LIBCURL_LIBRARIES}
-	${obs_PLATFORM_LIBRARIES})
+	${obs_PLATFORM_LIBRARIES}
+	"C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.2\\lib\\x64\\nvml.lib"
+	)
 
 set_target_properties(obs PROPERTIES FOLDER "frontend")
 
