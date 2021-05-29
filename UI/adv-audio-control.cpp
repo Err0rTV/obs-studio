@@ -504,8 +504,9 @@ void OBSAdvAudioCtrl::monitoringTypeChanged(int index)
 		break;
 	}
 
+	const char *name = obs_source_get_name(source);
 	blog(LOG_INFO, "User changed audio monitoring for source '%s' to: %s",
-	     obs_source_get_name(source), type);
+	     name ? name : "(null)", type);
 
 	auto undo_redo = [](const std::string &name, obs_monitoring_type val) {
 		obs_source_t *source = obs_get_source_by_name(name.c_str());
@@ -513,7 +514,6 @@ void OBSAdvAudioCtrl::monitoringTypeChanged(int index)
 		obs_source_release(source);
 	};
 
-	const char *name = obs_source_get_name(source);
 	OBSBasic::Get()->undo_s.add_action(
 		QTStr("Undo.MonitoringType.Change").arg(name),
 		std::bind(undo_redo, std::placeholders::_1, prev),
