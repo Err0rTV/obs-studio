@@ -248,6 +248,72 @@ static inline void vec4_from_rgba_srgb(struct vec4 *dst, uint32_t rgba)
 EXPORT void vec4_transform(struct vec4 *dst, const struct vec4 *v,
 			   const struct matrix4 *m);
 
+static inline float srgb_nonlinear_to_linear(float u)
+{
+	return (u <= 0.04045f) ? (u / 12.92f)
+			       : powf((u + 0.055f) / 1.055f, 2.4f);
+}
+static inline void vec4_from_bgra_srgb(struct vec4 *dst, uint32_t bgra)
+{
+	dst->z = srgb_nonlinear_to_linear((float)(bgra & 0xFF) / 255.0f);
+	bgra >>= 8;
+	dst->y = srgb_nonlinear_to_linear((float)(bgra & 0xFF) / 255.0f);
+	bgra >>= 8;
+	dst->x = srgb_nonlinear_to_linear((float)(bgra & 0xFF) / 255.0f);
+	bgra >>= 8;
+	dst->w = (float)bgra / 255.0f;
+}
+static inline void vec4_from_rgba_srgb_premultiply(struct vec4 *dst,
+						   uint32_t rgba)
+{
+	vec4_from_rgba_srgb(dst, rgba);
+	dst->x *= dst->w;
+	dst->y *= dst->w;
+	dst->z *= dst->w;
+}
+static inline void vec4_from_bgra_srgb_premultiply(struct vec4 *dst,
+						   uint32_t bgra)
+{
+	vec4_from_bgra_srgb(dst, bgra);
+	dst->x *= dst->w;
+	dst->y *= dst->w;
+	dst->z *= dst->w;
+}
+static inline float srgb_linear_to_nonlinear(float u)
+{
+	return (u <= 0.0031308f) ? (12.92f * u)
+				 : ((1.055f * powf(u, 1.0f / 2.4f)) - 0.055f);
+}
+static inline uint32_t vec4_to_rgba_srgb(const struct vec4 *src)
+{
+	uint32_t val;
+	val = (uint32_t)((srgb_linear_to_nonlinear(src->x) * 255.0f) + 0.5f);
+	val |= (uint32_t)((srgb_linear_to_nonlinear(src->y) * 255.0f) + 0.5f)
+	       << 8;
+	val |= (uint32_t)((srgb_linear_to_nonlinear(src->z) * 255.0f) + 0.5f)
+	       << 16;
+	val |= (uint32_t)((src->w * 255.0f) + 0.5f) << 24;
+	return val;
+}
+static inline void vec4_srgb_linear_to_nonlinear(struct vec4 *dst)
+{
+	dst->x = srgb_linear_to_nonlinear(dst->x);
+	dst->y = srgb_linear_to_nonlinear(dst->y);
+	dst->y = srgb_linear_to_nonlinear(dst->y);
+}
+static inline uint32_t vec4_to_bgra_srgb(const struct vec4 *src)
+{
+	uint32_t val;
+	val = (uint32_t)((srgb_linear_to_nonlinear(src->z) * 255.0f) + 0.5f);
+	val |= (uint32_t)((srgb_linear_to_nonlinear(src->y) * 255.0f) + 0.5f)
+	       << 8;
+	val |= (uint32_t)((srgb_linear_to_nonlinear(src->x) * 255.0f) + 0.5f)
+	       << 16;
+	val |= (uint32_t)((src->w * 255.0f) + 0.5f) << 24;
+	return val;
+}
+
+
 #ifdef __cplusplus
 }
 #endif
