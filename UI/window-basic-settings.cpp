@@ -269,7 +269,6 @@ void OBSBasicSettings::ToggleDisableAero(bool checked)
 }
 #endif
 
-
 static int gcd(int a, int b)
 {
 	return b == 0 ? a : gcd(b, a % b);
@@ -316,8 +315,6 @@ void OBSBasicSettings::HookWidget(QWidget *widget, const char *signal,
 	widget->setProperty("changed", QVariant(false));
 }
 
-
-
 OBSBasicSettings::OBSBasicSettings(QWidget *parent)
 	: QDialog(parent),
 	  main(qobject_cast<OBSBasic *>(parent)),
@@ -336,7 +333,8 @@ OBSBasicSettings::OBSBasicSettings(QWidget *parent)
 	//TODO: vectorize done
 
 	for (int c = 0; c < MAX_AUDIO_MIXES; c++) {
-		auto adbaudio = new advOutTrack(this, ui->advOutTrackContainer, c);
+		auto adbaudio =
+			new advOutTrack(this, ui->advOutTrackContainer, c);
 		this->VadvOutTrack.append(adbaudio);
 		ui->advOutTrackContainer->layout()->addWidget(adbaudio);
 
@@ -796,7 +794,7 @@ OBSBasicSettings::OBSBasicSettings(QWidget *parent)
 		SLOT(AdvReplayBufferChanged()));
 
 	//TODO: vectorize
-		connect(ui->advOutRecTrack1, SIGNAL(toggled(bool)), this,
+	connect(ui->advOutRecTrack1, SIGNAL(toggled(bool)), this,
 		SLOT(AdvReplayBufferChanged()));
 	connect(ui->advOutRecTrack2, SIGNAL(toggled(bool)), this,
 		SLOT(AdvReplayBufferChanged()));
@@ -3539,11 +3537,13 @@ void OBSBasicSettings::SaveOutputSettings()
 			(ui->advOutFFTrack9->isChecked() ? (1 << 8) : 0) |
 			(ui->advOutFFTrack10->isChecked() ? (1 << 9) : 0));
 
-	advOutTrack * t;
+	advOutTrack *t;
 	foreach(t, VadvOutTrack)
 	{
-		SaveCombo(t->getTrackBitrate(), "AdvOut", t->getBitrateName().toLocal8Bit());
-		SaveEdit(t->getTrackName(), "AdvOut", t->getName().toLocal8Bit());
+		SaveCombo(t->getTrackBitrate(), "AdvOut",
+			  t->getBitrateName().toLocal8Bit());
+		SaveEdit(t->getTrackName(), "AdvOut",
+			 t->getName().toLocal8Bit());
 	}
 
 	/*SaveCombo(ui->advOutTrack1Bitrate, "AdvOut", "Track1Bitrate");
@@ -4236,12 +4236,9 @@ void OBSBasicSettings::SpeakerLayoutChanged(int idx)
 		 */
 
 		ui->audioMsg_2->setText(warning);
-		
-		advOutTrack * t;
-		foreach(t, VadvOutTrack)
-		{
-			t->_populateAACBitrates();
-		}
+
+		advOutTrack *t;
+		foreach(t, VadvOutTrack) { t->_populateAACBitrates(); }
 		//TODO: vectorize done
 		/*
 		PopulateAACBitrates(
@@ -4270,7 +4267,6 @@ void OBSBasicSettings::SpeakerLayoutChanged(int idx)
 			 ui->advOutTrack10Bitrate},
 			320);*/
 
-
 		SaveCombo(ui->simpleOutputABitrate, "SimpleOutput", "ABitrate");
 
 		//TODO: vectorize done
@@ -4293,8 +4289,6 @@ void OBSBasicSettings::SpeakerLayoutChanged(int idx)
  * resets current bitrate if too large and restricts the number of bitrates
  * displayed when multichannel OFF
  */
-
-
 
 void OBSBasicSettings::VideoChangedRestart()
 {

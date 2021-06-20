@@ -67,11 +67,14 @@ void advOutTrack::_populateAACBitrates()
 void advOutTrack::_restrictResetBitrates(int bitrate)
 {
 	RestrictResetBitrates({ui->advOutTrackBitrate}, bitrate);
-	saveConfig( getBitrateName().toLocal8Bit());
+	saveConfig(getBitrateName().toLocal8Bit());
 }
 
 void advOutTrack::saveConfig(const char *value)
 {
 	OBSBasic *main = reinterpret_cast<OBSBasic *>(App()->GetMainWindow());
-	config_set_string(main->Config(), "AdvOut", value, this->ui->advOutTrackBitrate->currentText().toUtf8()); //TODO: duplicate in windows-basic-settings.cpp
+	config_set_string(
+		main->Config(), "AdvOut", value,
+		this->ui->advOutTrackBitrate->currentText()
+			.toUtf8()); //TODO: duplicate in windows-basic-settings.cpp
 }

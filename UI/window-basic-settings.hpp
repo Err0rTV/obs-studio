@@ -70,7 +70,8 @@ class OBSHotkeyWidget;
 /* clang-format on */
 
 //TODO: move to bitratecontrol
-static void RestrictResetBitrates(std::initializer_list<QComboBox *> boxes, int maxbitrate)
+static void RestrictResetBitrates(std::initializer_list<QComboBox *> boxes,
+				  int maxbitrate)
 {
 	for (auto box : boxes) {
 		int idx = box->currentIndex();
@@ -119,7 +120,6 @@ static void PopulateAACBitrates(std::initializer_list<QComboBox *> boxes)
 		box->setCurrentText(currentText);
 	}
 }
-
 
 class SilentUpdateCheckBox : public QCheckBox {
 	Q_OBJECT
@@ -203,7 +203,7 @@ private:
 	int lastChannelSetupIdx = 0;
 
 	OBSFFFormatDesc formats;
-	QVector<advOutTrack*> VadvOutTrack;
+	QVector<advOutTrack *> VadvOutTrack;
 
 	OBSPropertiesView *streamProperties = nullptr;
 	OBSPropertiesView *streamEncoderProps = nullptr;

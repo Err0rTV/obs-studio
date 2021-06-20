@@ -294,7 +294,6 @@ void OBSAdvAudioCtrl::OBSSourceMixersChanged(void *param, calldata_t *calldata)
 				  Q_ARG(uint32_t, mixers));
 }
 
-
 void OBSAdvAudioCtrl::SourceActiveChanged(bool isActive)
 {
 	if (isActive) {
@@ -331,7 +330,7 @@ void OBSAdvAudioCtrl::SourceSyncChanged(int64_t offset)
 
 void OBSAdvAudioCtrl::SourceMixersChanged(uint32_t mixers)
 {
-	OBSmixert * mix;
+	OBSmixert *mix;
 	foreach(mix, this->vmixers) mix->setState(mixers);
 }
 
@@ -553,7 +552,6 @@ static inline void setMixer(obs_source_t *source, const int mixerIdx,
 // {
 // 	setMixer(source, 0, checked);
 // }
-
 
 void OBSAdvAudioCtrl::SetVolumeWidget(VolumeType type)
 {

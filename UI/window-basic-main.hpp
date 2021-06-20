@@ -861,7 +861,7 @@ public:
 	OBSWeakSource copyFilter = nullptr;
 
 	void ShowStatusBarMessage(const QString &message);
-	
+
 	nvmlDevice_t device;
 
 	static OBSData

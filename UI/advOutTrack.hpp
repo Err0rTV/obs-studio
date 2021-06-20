@@ -8,7 +8,7 @@
 
 class OBSBasicSettings;
 
-	/** 
+/** 
  * @ingroup UI_OBS
  */
 class advOutTrack : public QWidget {
@@ -40,15 +40,18 @@ public:
 	void _restrictResetBitrates(int);
 	void saveConfig(const char *value);
 
-	QString getName() {  return QString("Track%1Name").arg(n+1); }
-	QString getBitrateName() { return QString("Track%1Bitrate").arg(n+1); }
-	QComboBox *getTrackBitrate() { return ui->advOutTrackBitrate;  }
-	QLineEdit *getTrackName() { return ui->advOutTrackName;  }
+	QString getName() { return QString("Track%1Name").arg(n + 1); }
+	QString getBitrateName()
+	{
+		return QString("Track%1Bitrate").arg(n + 1);
+	}
+	QComboBox *getTrackBitrate() { return ui->advOutTrackBitrate; }
+	QLineEdit *getTrackName() { return ui->advOutTrackName; }
 
 	QString name;
 	unsigned int bitrate;
 	int n;
 
-//public slots:
-//	void OutputChanged();
+	//public slots:
+	//	void OutputChanged();
 };

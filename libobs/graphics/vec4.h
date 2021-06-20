@@ -313,7 +313,6 @@ static inline uint32_t vec4_to_bgra_srgb(const struct vec4 *src)
 	return val;
 }
 
-
 #ifdef __cplusplus
 }
 #endif

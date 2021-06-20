@@ -328,7 +328,6 @@ OBSBasic::OBSBasic(QWidget *parent)
 		result = nvmlDeviceGetHandleByIndex(0, &device);
 	}
 
-
 	diskFullTimer = new QTimer(this);
 	connect(diskFullTimer, SIGNAL(timeout()), this,
 		SLOT(CheckDiskSpaceRemaining()));
@@ -1420,12 +1419,13 @@ bool OBSBasic::InitBasicConfigDefaults()
 	config_set_default_uint(basicConfig, "AdvOut", "FFABitrate", 160);
 	config_set_default_uint(basicConfig, "AdvOut", "FFAudioMixes", 1);
 
-//TODO: vectorize done
+	//TODO: vectorize done
 	for (int c = 0; c < MAX_AUDIO_MIXES; c++) {
-		QString text = QString("Track%1Bitrate").arg(c+1);
-		config_set_default_uint(basicConfig, "AdvOut", text.toLocal8Bit(), 160);
+		QString text = QString("Track%1Bitrate").arg(c + 1);
+		config_set_default_uint(basicConfig, "AdvOut",
+					text.toLocal8Bit(), 160);
 	}
-/*
+	/*
 	config_set_default_uint(basicConfig, "AdvOut", "Track1Bitrate", 160);
 	config_set_default_uint(basicConfig, "AdvOut", "Track2Bitrate", 160);
 	config_set_default_uint(basicConfig, "AdvOut", "Track3Bitrate", 160);

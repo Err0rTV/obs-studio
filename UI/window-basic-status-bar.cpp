@@ -243,15 +243,15 @@ void OBSBasicStatusBar::UpdateCPUUsage()
 	if (main->device != NULL) {
 		nvmlUtilization_t utilization;
 		auto result = nvmlDeviceGetUtilizationRates(main->device,
-						       &utilization);
+							    &utilization);
 		if (NVML_SUCCESS == result) {
 			text += QString("GPU: ") +
 				QString::number((utilization.gpu), 'f', 1);
 		}
 	}
 
-	text += QString("%, ") +
-		QString::number(obs_get_active_fps(), 'f', 2) + QString(" fps");
+	text += QString("%, ") + QString::number(obs_get_active_fps(), 'f', 2) +
+		QString(" fps");
 
 	cpuUsage->setText(text);
 	cpuUsage->setMinimumWidth(cpuUsage->width());
